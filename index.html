@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#b92b27">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Meu Amigo Secreto É...</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+
+<div class="hero">
+    <h1>🎁 Meu Amigo Secreto É...</h1>
+    <p>Revele o seu amigo secreto com muito suspense e diversão</p>
+</div>
+
+<div class="container">
+
+    <div id="view-home">
+        <div style="height: 20px;"></div>
+
+        <div id="view-home-content">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="margin:0;">Participantes</h3>
+                    <span id="count-display" style="background:var(--highlight); color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem;">0</span>
+                </div>
+                
+                <p style="font-size:0.8rem; color:#888; margin-top:5px;">Lista salva neste navegador:</p>
+                
+                <ul id="game-list" class="participant-list"></ul>
+                <div id="empty-game" class="text-center" style="color:#aaa; padding:10px; font-size:0.9rem;">Lista vazia. Adicione pessoas!</div>
+
+                <button class="btn btn-primary" onclick="app.openAddScreen()">
+                    <span>+ Adicionar Participante</span>
+                </button>
+            </div>
+
+            <div>
+                <div class="card" style="border-left: 5px solid var(--success);">
+                    <h3 style="margin-top:0; font-size:1.1rem;">Tudo pronto?</h3>
+                    <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Certifique-se de que todos estão cadastrados.</p>
+                    <button class="btn btn-secondary" onclick="app.startGameSetup()">
+                        🚀 Iniciar gerador de dicas
+                    </button>
+                </div>
+
+                <div class="faq-section">
+                    <h3 class="faq-title" style="text-align: left; font-size:1rem;">Ajuda Rápida</h3>
+                    <details>
+                        <summary>O que são as bolinhas vermelhas?</summary>
+                        <div class="faq-answer">Indica campos faltantes no cadastro. Tente deixar tudo verde!</div>
+                    </details>
+                    <details>
+                        <summary>Como editar?</summary>
+                        <div class="faq-answer">Clique no ícone de <strong>Lápis</strong> ✏️.</div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-add" class="hidden">
+        <div style="height: 20px;"></div>
+        <div class="card">
+            <div class="stepper">
+                <div class="step-pill active" id="pill-1"></div>
+                <div class="step-pill" id="pill-2"></div>
+                <div class="step-pill" id="pill-3"></div>
+                <div class="step-pill" id="pill-4"></div>
+            </div>
+            
+            <h3 class="text-center" style="margin-top:0;" id="form-title">Novo Cadastro</h3>
+            
+            <form id="add-form" onsubmit="event.preventDefault();">
+                <input type="hidden" id="inp-edit-id"> 
+                
+                <div class="input-section" id="sec-1">
+                    <label>Nome</label><input type="text" id="inp-name" placeholder="Ex: Gabriel">
+                    <label>Gênero</label>
+                    <select id="inp-gender"><option value="">Selecione...</option><option value="Homem">Homem</option><option value="Mulher">Mulher</option></select>
+                    <label>Idade</label>
+                    <select id="inp-age">
+                        <option value="">Selecione...</option>
+                        <option value="0-5">0 a 5 anos</option><option value="5-10">5 a 10 anos</option>
+                        <option value="10-20">10 a 20 anos</option><option value="20-30">20 a 30 anos</option>
+                        <option value="30-45">30 a 45 anos</option><option value="45-60">45 a 60 anos</option>
+                        <option value="60-85">60 a 85 anos</option><option value="85+">85+ anos</option>
+                    </select>
+                    <button type="button" class="btn btn-primary" onclick="app.nextSection(2)">Próximo ➜</button>
+                    <button type="button" class="btn btn-text" onclick="app.nav('view-home')">Cancelar</button>
+                </div>
+
+                <div class="input-section hidden" id="sec-2">
+                    <label>Cabelo</label>
+                    <select id="inp-hair"><option value="">Selecione...</option><option value="Escuro">Escuro</option><option value="Claro">Claro</option><option value="Ruivo">Ruivo</option><option value="Grisalho">Grisalho</option><option value="Careca">Careca</option></select>
+                    <label>Usa Óculos?</label><select id="inp-glasses"><option value="">Selecione...</option><option value="Não">Não</option><option value="Sim">Sim</option></select>
+                    <label>Altura</label><select id="inp-height"><option value="">Selecione...</option><option value="Médio">Médio</option><option value="Alto">Alto</option><option value="Baixo">Baixo</option></select>
+                    <div class="btn-row"><button type="button" class="btn btn-secondary" onclick="app.prevSection(1)">Voltar</button><button type="button" class="btn btn-primary" onclick="app.nextSection(3)">Próximo ➜</button></div>
+                </div>
+
+                <div class="input-section hidden" id="sec-3">
+                    <label>Time de Futebol</label>
+                    <input type="text" id="inp-team" list="teams-list" placeholder="Pesquisar...">
+                    <datalist id="teams-list"></datalist>
+                    <label>Comida</label>
+                    <select id="inp-food"><option value="">Selecione...</option><option value="Doce">Doce 🍫</option><option value="Salgado">Salgado 🍕</option></select>
+                    <label>Música</label>
+                    <select id="inp-music"><option value="">Selecione...</option><option value="Sertanejo">Sertanejo</option><option value="Rock">Rock</option><option value="Pop">Pop</option><option value="MPB">MPB</option><option value="Funk">Funk</option><option value="Pagode">Pagode</option><option value="Eletrônica">Eletrônica</option><option value="Rap">Rap</option><option value="Reggaeton">Reggaeton</option><option value="K-Pop">K-Pop</option><option value="Gospel">Gospel</option><option value="Forró">Forró</option><option value="Eclético">Eclético</option></select>
+                    <div class="btn-row"><button type="button" class="btn btn-secondary" onclick="app.prevSection(2)">Voltar</button><button type="button" class="btn btn-primary" onclick="app.nextSection(4)">Próximo ➜</button></div>
+                </div>
+
+                <div class="input-section hidden" id="sec-4">
+                    <label>Profissão</label><input type="text" id="inp-dept" list="professions-list" placeholder="Buscar...">
+                    <datalist id="professions-list"></datalist>
+                    <label>Personalidade</label>
+                    <select id="inp-personality"><option value="">Selecione...</option><option value="Extrovertido">Extrovertido</option><option value="Introvertido">Introvertido</option><option value="Engraçado">Engraçado</option><option value="Sério">Sério</option><option value="Zen">Zen</option><option value="Elétrico">Elétrico</option><option value="Nerd">Nerd</option><option value="Baladeiro">Baladeiro</option></select>
+                    <label>Estado</label><select id="inp-state" onchange="app.onStateChange()"><option value="">Selecione...</option></select>
+                    <label>Cidade</label><select id="inp-city" disabled><option value="">Selecione o Estado...</option></select>
+                    <input type="text" id="inp-city-text" class="hidden" placeholder="Digite a cidade">
+                    <div class="btn-row"><button type="button" class="btn btn-secondary" onclick="app.prevSection(3)">Voltar</button><button type="button" class="btn btn-primary" onclick="app.saveParticipant()">💾 Salvar</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="view-setup-identity" class="hidden">
+        <div class="card text-center">
+            <h3>Quem é você?</h3>
+            <p style="font-size:0.9rem; color:#666; margin-bottom: 20px;">Identifique-se para que seu nome não apareça na lista de dicas.</p>
+            <label style="text-align:left;">Eu sou...</label>
+            <select id="select-identity" style="margin-bottom:20px; padding:15px; font-size:1rem;"></select>
+            <button class="btn btn-primary" onclick="app.confirmIdentity()">Continuar ➜</button>
+            <button class="btn btn-text" onclick="app.nav('view-home')">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="view-setup-reveal" class="hidden">
+        <div class="card text-center">
+            <h3>Quem você tirou?</h3>
+            <p style="font-size:0.9rem; color:#666; margin-bottom: 20px;">Selecione o seu amigo secreto.</p>
+            <select id="select-target" style="margin-bottom:20px; padding:15px; font-size:1rem;"></select>
+            <button class="btn btn-primary" onclick="app.startReveal()">Começar Dicas</button>
+            <button class="btn btn-text" onclick="app.nav('view-setup-identity')">Voltar</button>
+        </div>
+    </div>
+
+    <div id="view-game" class="hidden">
+        <div style="height:20px;"></div>
+        <div class="hint-card">
+            <div id="hint-label" style="font-size:0.8rem; opacity:0.8;">STATUS</div>
+            <div id="hint-display" style="font-size:1.4rem;">Preparando...</div>
+        </div>
+        <button class="btn btn-primary" id="btn-next-hint" onclick="app.generateNextHint()">💡 Próxima Dica</button>
+        <div class="suspect-grid" id="suspects-container"></div>
+        <div style="height:40px;"></div>
+        <button class="btn btn-secondary" onclick="app.nav('view-home')">Encerrar</button>
+    </div>
+
+</div>
+
+<footer class="footer-bruno">
+    <p>Powered by <strong>Bruno Suzuki</strong> &copy; <span id="year-span">2025</span> Todos os direitos reservados</p>
+</footer>
+
+<script type="module">
+    import autoAnimate from 'https://cdn.jsdelivr.net/npm/@formkit/auto-animate/index.min.js';
+    // Ativa a animação na lista de participantes
+    const list = document.getElementById('game-list');
+    const grid = document.getElementById('suspects-container');
+    if(list) autoAnimate(list);
+    if(grid) autoAnimate(grid);
+</script>
+
+<script>
+    document.getElementById('year-span').innerText = new Date().getFullYear();
+
+    const app = {
+        activeParticipants: [], 
+        currentSuspects: [],
+        currentTarget: null,
+        currentPlayerId: null, 
+        usedHintsKeys: [],
+        
+        init: () => {
+            const professionsList = ["Administrador(a)", "Financeiro(a)", "Empreendedor", "Logística", "Advogado(a)", "Aposentado(a)", "Arquiteto(a)", "Atleta", "Cozinheiro(a)", "Dentista", "Desenvolvedor(a)", "Dona(o) de Casa", "Enfermeiro(a)", "Engenheiro(a)", "Estudante", "Médico(a)", "Músico(a)", "Professor(a)", "Vendedor(a)", "Outro"];
+            const dl = document.getElementById('professions-list');
+            if(dl) professionsList.forEach(p => { const opt = document.createElement('option'); opt.value = p; dl.appendChild(opt); });
+
+            const teamsList = [
+                "Nenhum", "Seleção Brasileira",
+                "Flamengo", "Corinthians", "Palmeiras", "São Paulo", "Vasco", "Santos", "Grêmio", "Internacional", "Atlético-MG", "Cruzeiro", "Botafogo", "Fluminense", "Bahia", "Vitória", "Sport", "Santa Cruz", "Náutico", "Ceará", "Fortaleza", "Athletico-PR", "Coritiba", "Goiás", "Vila Nova", "Paysandu", "Remo", "Avaí", "Figueirense", "Chapecoense", "Criciúma", "Juventude", "Ponte Preta", "Guarani", "América-MG", "Red Bull Bragantino", "Cuiabá",
+                "Real Madrid", "Barcelona", "PSG", "Manchester City", "Manchester United", "Liverpool", "Chelsea", "Arsenal", "Bayern de Munique", "Juventus", "Milan", "Inter de Milão", "Boca Juniors", "River Plate"
+            ];
+            const dlTeams = document.getElementById('teams-list');
+            if(dlTeams) teamsList.sort().forEach(t => { const opt = document.createElement('option'); opt.value = t; dlTeams.appendChild(opt); });
+
+            app.populateStates();
+            app.loadFromStorage();
+        },
+
+        populateStates: () => {
+            const states = [{sigla:'AC',nome:'Acre'},{sigla:'AL',nome:'Alagoas'},{sigla:'AP',nome:'Amapá'},{sigla:'AM',nome:'Amazonas'},{sigla:'BA',nome:'Bahia'},{sigla:'CE',nome:'Ceará'},{sigla:'DF',nome:'Distrito Federal'},{sigla:'ES',nome:'Espírito Santo'},{sigla:'GO',nome:'Goiás'},{sigla:'MA',nome:'Maranhão'},{sigla:'MT',nome:'Mato Grosso'},{sigla:'MS',nome:'Mato Grosso do Sul'},{sigla:'MG',nome:'Minas Gerais'},{sigla:'PA',nome:'Pará'},{sigla:'PB',nome:'Paraíba'},{sigla:'PR',nome:'Paraná'},{sigla:'PE',nome:'Pernambuco'},{sigla:'PI',nome:'Piauí'},{sigla:'RJ',nome:'Rio de Janeiro'},{sigla:'RN',nome:'Rio Grande do Norte'},{sigla:'RS',nome:'Rio Grande do Sul'},{sigla:'RO',nome:'Rondônia'},{sigla:'RR',nome:'Roraima'},{sigla:'SC',nome:'Santa Catarina'},{sigla:'SP',nome:'São Paulo'},{sigla:'SE',nome:'Sergipe'},{sigla:'TO',nome:'Tocantins'}];
+            const sel = document.getElementById('inp-state');
+            states.forEach(s => { const opt = document.createElement('option'); opt.value = s.sigla; opt.innerText = s.nome; sel.appendChild(opt); });
+        },
+
+        onStateChange: () => {
+            const uf = document.getElementById('inp-state').value;
+            const citySel = document.getElementById('inp-city');
+            const cityText = document.getElementById('inp-city-text');
+            citySel.innerHTML = '<option value="">Carregando...</option>';
+            citySel.disabled = true;
+            if(!uf) { citySel.innerHTML = '<option value="">Selecione o Estado primeiro...</option>'; return; }
+            fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`)
+                .then(response => response.json())
+                .then(cities => {
+                    citySel.innerHTML = '<option value="">Selecione a Cidade...</option>';
+                    cities.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.nome; opt.innerText = c.nome; citySel.appendChild(opt);
+                    });
+                    citySel.disabled = false; citySel.classList.remove('hidden'); cityText.classList.add('hidden');
+                })
+                .catch(err => { citySel.classList.add('hidden'); cityText.classList.remove('hidden'); cityText.focus(); });
+        },
+
+        saveToStorage: () => { try { localStorage.setItem('amigoSecretoData', JSON.stringify(app.activeParticipants)); } catch (e) {} },
+        loadFromStorage: () => { try { const data = localStorage.getItem('amigoSecretoData'); if (data) { app.activeParticipants = JSON.parse(data); app.renderGameList(); } } catch (e) {} },
+
+        openAddScreen: () => { app.resetForm(); app.nav('view-add'); },
+
+        nav: (viewId) => {
+            document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(viewId);
+            if(target) target.classList.remove('hidden');
+            window.scrollTo(0,0);
+        },
+
+        resetForm: () => {
+            document.getElementById('add-form').reset();
+            document.getElementById('inp-edit-id').value = "";
+            document.getElementById('form-title').innerText = "Novo Cadastro";
+            document.getElementById('inp-city').innerHTML = '<option value="">Selecione o Estado...</option>';
+            document.getElementById('inp-city').disabled = true;
+            document.getElementById('inp-city').classList.remove('hidden');
+            document.getElementById('inp-city-text').classList.add('hidden');
+            app.nextSection(1);
+        },
+
+        nextSection: (n) => {
+            document.querySelectorAll('.input-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('sec-'+n).classList.remove('hidden');
+            [1,2,3,4].forEach(i => { const p = document.getElementById('pill-'+i); if(p){ p.classList.remove('active'); if(i===n) p.classList.add('active'); } });
+        },
+        prevSection: (n) => app.nextSection(n),
+
+        editParticipant: (index) => {
+            const p = app.activeParticipants[index];
+            if(!p) return;
+            document.getElementById('inp-edit-id').value = index;
+            document.getElementById('inp-name').value = p.name;
+            document.getElementById('inp-gender').value = p.gender || "";
+            document.getElementById('inp-age').value = p.age || "";
+            document.getElementById('inp-hair').value = p.hair || "";
+            document.getElementById('inp-glasses').value = p.glasses || "";
+            document.getElementById('inp-height').value = p.height || "";
+            document.getElementById('inp-dept').value = p.dept === "Não informado" ? "" : p.dept;
+            document.getElementById('inp-personality').value = p.personality || "";
+            document.getElementById('inp-team').value = p.team || "";
+            document.getElementById('inp-food').value = p.food || "";
+            document.getElementById('inp-music').value = p.music || "";
+            document.getElementById('inp-state').value = p.state || "";
+            document.getElementById('form-title').innerText = "Editando " + p.name;
+            
+            // Navegação sem resetar
+            app.nav('view-add');
+            app.nextSection(1); 
+
+            if(p.state) {
+                app.onStateChange();
+                setTimeout(() => {
+                    const citySel = document.getElementById('inp-city');
+                    if(!citySel.classList.contains('hidden')) citySel.value = p.city || "";
+                    else document.getElementById('inp-city-text').value = p.city || "";
+                }, 800);
+            }
+        },
+
+        saveParticipant: () => {
+            const name = document.getElementById('inp-name').value.trim();
+            if(!name) return Swal.fire('Erro', 'Nome é obrigatório', 'error');
+            const editIndex = document.getElementById('inp-edit-id').value;
+
+            const isDuplicate = app.activeParticipants.some((p, idx) => {
+                if (editIndex !== "" && idx == editIndex) return false;
+                return p.name.toLowerCase() === name.toLowerCase();
+            });
+
+            if(isDuplicate) return Swal.fire('Ops!', 'Nome já existe!', 'warning');
+
+            let cityVal = document.getElementById('inp-city').value;
+            if(document.getElementById('inp-city').classList.contains('hidden')) cityVal = document.getElementById('inp-city-text').value;
+
+            const p = {
+                name: name,
+                gender: document.getElementById('inp-gender').value,
+                age: document.getElementById('inp-age').value,
+                hair: document.getElementById('inp-hair').value,
+                glasses: document.getElementById('inp-glasses').value,
+                height: document.getElementById('inp-height').value,
+                dept: document.getElementById('inp-dept').value || "Não informado",
+                personality: document.getElementById('inp-personality').value,
+                team: document.getElementById('inp-team').value, 
+                food: document.getElementById('inp-food').value, 
+                music: document.getElementById('inp-music').value,
+                state: document.getElementById('inp-state').value,
+                city: cityVal,
+                gameId: (editIndex !== "") ? app.activeParticipants[editIndex].gameId : (Date.now() + Math.random())
+            };
+
+            if (editIndex !== "") { 
+                app.activeParticipants[editIndex] = p; 
+                Swal.fire({title: 'Atualizado!', icon: 'success', timer: 1500, showConfirmButton: false});
+            } else { 
+                app.activeParticipants.push(p); 
+                Swal.fire({title: 'Criado!', icon: 'success', timer: 1500, showConfirmButton: false});
+            }
+            app.saveToStorage(); app.renderGameList(); app.nav('view-home');
+        },
+
+        removeFromGame: (index) => {
+            Swal.fire({
+                title: 'Remover?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sim, remover!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    app.activeParticipants.splice(index, 1);
+                    app.saveToStorage(); app.renderGameList();
+                    Swal.fire('Removido!', '', 'success');
+                }
+            });
+        },
+
+        countMissingFields: (p) => {
+            const fields = ['gender', 'age', 'hair', 'glasses', 'height', 'dept', 'personality', 'team', 'food', 'music', 'state', 'city'];
+            let missing = 0;
+            fields.forEach(f => { if(!p[f] || p[f] === "" || p[f] === "Não informado") missing++; });
+            return missing;
+        },
+
+        renderGameList: () => {
+            const list = document.getElementById('game-list');
+            const count = document.getElementById('count-display');
+            if(!list || !count) return;
+            list.innerHTML = '';
+            count.innerText = app.activeParticipants.length;
+
+            if(app.activeParticipants.length === 0) {
+                document.getElementById('empty-game').style.display = 'block';
+            } else {
+                document.getElementById('empty-game').style.display = 'none';
+                app.activeParticipants.forEach((p, idx) => {
+                    const li = document.createElement('li');
+                    li.className = 'participant-item';
+                    const missingCount = app.countMissingFields(p);
+                    let statusBadge = missingCount === 0 ? `<span class="complete-badge" title="Cadastro Completo">✓</span>` : `<span class="missing-badge" title="${missingCount} campos faltantes">${missingCount}</span>`;
+                    li.innerHTML = `<div style="display:flex; align-items:center;"><strong>${p.name}</strong>${statusBadge}</div><div class="action-buttons"><button class="btn-edit-small" onclick="app.editParticipant(${idx})" title="Editar">✏️</button><button class="btn-icon-small" onclick="app.removeFromGame(${idx})" title="Remover">🗑️</button></div>`;
+                    list.appendChild(li);
+                });
+            }
+        },
+
+        startGameSetup: () => {
+            if(app.activeParticipants.length < 3) return Swal.fire('Atenção', 'Mínimo 3 pessoas para jogar!', 'info');
+            const selIdentity = document.getElementById('select-identity');
+            selIdentity.innerHTML = "<option value='' disabled selected>Selecione seu nome...</option>";
+            [...app.activeParticipants].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.gameId; opt.innerText = p.name; selIdentity.appendChild(opt);
+            });
+            app.nav('view-setup-identity');
+        },
+
+        confirmIdentity: () => {
+            const myId = document.getElementById('select-identity').value;
+            if(!myId) return Swal.fire('Atenção', 'Diga quem você é!', 'warning');
+            app.currentPlayerId = myId;
+            const selTarget = document.getElementById('select-target');
+            selTarget.innerHTML = "<option value='' disabled selected>Selecione...</option>";
+            const validTargets = app.activeParticipants.filter(p => p.gameId != myId);
+            validTargets.sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.gameId; opt.innerText = p.name; selTarget.appendChild(opt);
+            });
+            app.nav('view-setup-reveal');
+        },
+
+        startReveal: () => {
+            const tid = document.getElementById('select-target').value;
+            if(!tid) return Swal.fire('Atenção', 'Selecione quem você tirou!', 'warning');
+            app.currentTarget = app.activeParticipants.find(p => p.gameId == tid);
+            app.currentSuspects = app.activeParticipants.filter(p => p.gameId != app.currentPlayerId);
+            app.usedHintsKeys = [];
+            const cont = document.getElementById('suspects-container');
+            cont.innerHTML = '';
+            app.currentSuspects.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'suspect active';
+                div.id = 'sus-'+p.gameId;
+                div.innerHTML = `<div class="suspect-avatar">${p.gender==='Homem'?'👨':'👩'}</div><div class="suspect-name">${p.name.split(' ')[0]}</div>`;
+                cont.appendChild(div);
+            });
+            document.getElementById('hint-label').innerText = "VAMOS LÁ";
+            document.getElementById('hint-display').innerText = "Toque abaixo para gerar a primeira dica";
+            const btnHint = document.getElementById('btn-next-hint');
+            btnHint.disabled = false;
+            btnHint.innerText = "💡 Gerar Dica";
+            app.nav('view-game');
+        },
+
+        generateNextHint: () => {
+            const target = app.currentTarget;
+            const active = app.currentSuspects.filter(p => {
+                const el = document.getElementById('sus-'+p.gameId);
+                return el && !el.classList.contains('eliminated');
+            });
+
+            if(active.length <= 1 || (active.length === 1 && active[0].gameId == target.gameId)) {
+                document.getElementById('hint-label').innerText = "FIM DE JOGO";
+                document.getElementById('hint-display').innerHTML = `É <strong>${target.name}</strong>! 🎉`;
+                active.forEach(p => { if(p.gameId !== target.gameId) app.eliminate(p.gameId); });
+                document.getElementById('btn-next-hint').disabled = true;
+                
+                // CONFETES AQUI!
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                return;
+            }
+
+            const categories = [
+                { key: 'gender', label: 'Gênero', text: v => `É <strong>${v}</strong>` },
+                { key: 'age', label: 'Idade', text: v => `Tem entre <strong>${v.replace('-',' e ')} anos</strong>` },
+                { key: 'hair', label: 'Cabelo', text: v => `Tem cabelo <strong>${v}</strong>` },
+                { key: 'glasses', label: 'Óculos', text: v => v==='Sim' ? 'Usa <strong>óculos</strong>' : 'Não usa <strong>óculos</strong>' },
+                { key: 'height', label: 'Altura', text: v => `Tem estatura <strong>${v}</strong>` },
+                { key: 'dept', label: 'Profissão', text: v => `Trabalha como<br><strong>${v}</strong>` },
+                { key: 'personality', label: 'Jeito', text: v => `É uma pessoa <strong>${v}</strong>` },
+                { key: 'team', label: 'Futebol', text: v => `Torce para o <strong>${v}</strong>` },
+                { key: 'food', label: 'Comida', text: v => `Prefere comer coisas <strong>${v}s</strong>` },
+                { key: 'music', label: 'Música', text: v => `Ouve <strong>${v}</strong>` },
+                { key: 'state', label: 'Estado', text: v => `Mora no estado de <strong>${v}</strong>` },
+                { key: 'city', label: 'Cidade', text: v => `Mora na cidade de <strong>${v}</strong>` }
+            ];
+
+            let bestCat = null, bestScore = -1000;
+            const avail = categories.filter(c => !app.usedHintsKeys.includes(c.key));
+            
+            if(avail.length === 0) {
+                document.getElementById('hint-display').innerText = `Começa com a letra ${target.name.charAt(0).toUpperCase()}`;
+                app.usedHintsKeys.push('char'); return;
+            }
+
+            avail.forEach(cat => {
+                const tVal = target[cat.key];
+                if(!tVal || tVal === "Não informado" || tVal === "") return;
+
+                const matchCount = active.filter(p => p[cat.key] === tVal).length;
+                const elimCount = active.length - matchCount;
+                
+                let score = 0;
+                if(elimCount === 0) score = -500; 
+                else if(elimCount === active.length) score = -500; 
+                else if(elimCount === 1) score = 100; 
+                else if(elimCount === 2) score = 90; 
+                else if(elimCount === 3) score = 70; 
+                else score = 10 / elimCount; 
+
+                score += Math.random() * 5;
+                if(score > bestScore) { bestScore = score; bestCat = cat; }
+            });
+
+            if(bestCat && bestScore > -100) {
+                app.usedHintsKeys.push(bestCat.key);
+                document.getElementById('hint-label').innerText = bestCat.label;
+                document.getElementById('hint-display').innerHTML = bestCat.text(target[bestCat.key]);
+                active.forEach(p => { if(p[bestCat.key] !== target[bestCat.key]) app.eliminate(p.gameId); });
+            } else {
+                document.getElementById('hint-display').innerText = `O nome tem ${target.name.split(' ')[0].length} letras`;
+                app.usedHintsKeys.push('len');
+            }
+        },
+
+        eliminate: (id) => {
+            const el = document.getElementById('sus-'+id);
+            if(el) { el.classList.remove('active'); el.classList.add('eliminated'); }
+        }
+    };
+
+    app.init();
+</script>
+
+</body>
+</html>
